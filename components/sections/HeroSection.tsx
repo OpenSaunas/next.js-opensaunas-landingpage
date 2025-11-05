@@ -1,6 +1,6 @@
 import Image from 'next/image';
 
-const Hero = () => {
+const HeroSection = () => {
   return (
     <section className="relative flex flex-col w-full items-start px-4 min-[1080px]:px-10 pt-2.5 min-[1080px]:pt-5 pb-20 min-[1080px]:pb-[400px] bg-[#F3EFEA]">
       {/* Text */}
@@ -28,4 +28,4 @@ const Hero = () => {
   );
 };
 
-export default Hero;
+export default HeroSection;
