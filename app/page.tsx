@@ -5,6 +5,7 @@ import AboutSection from '@/components/sections/AboutSection';
 import WhatWeDoSection from '@/components/sections/WhatWeDoSection';
 import SocialSoloTabs from '@/components/WhatWeDo/SocialSoloTabs';
 import IllustSection from '@/components/sections/IllustSection';
+import WaitListSection from '@/components/sections/WaitListSection';
 
 export default function Home() {
   return (
@@ -18,6 +19,7 @@ export default function Home() {
         <SocialSoloTabs />
       </div>
       <IllustSection />
+      <WaitListSection />
     </div>
   );
 }
