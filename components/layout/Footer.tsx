@@ -1,0 +1,40 @@
+const Footer = () => {
+  return (
+    <footer className="flex flex-row items-center justify-start w-full h-[90px] min-[1080px]:h-[120px]">
+      {/* Left Section */}
+      <div className="flex px-4 min-[1080px]:px-[39px] py-[11px] min-[1080px]:py-5 w-full h-full bg-[#D8D8D8]">
+        <div className="flex flex-col">
+          {/* Instagram Link */}
+          <a
+            href="https://www.instagram.com/opensaunas/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-[1.61] tracking-[-0.03em] text-black -mb-2 min-[1080px]:-mb-3 w-fit"
+          >
+            <span className="underline">Insta</span>
+            <span className="no-underline">g</span>
+            <span className="underline">ram</span>
+          </a>
+          <div
+            className="
+            flex
+            flex-col gap-0
+            min-[1080px]:flex-row min-[1080px]:gap-[17px]
+            font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-[1.61] tracking-[-0.03em] text-black
+            "
+          >
+            <p className="-mb-2 min-[1080px]:mb-0">Contact</p>
+            <p>opensaunas@gmail.com</p>
+          </div>
+        </div>
+      </div>
+      {/* Right Section */}
+      <div className="flex justify-start items-end px-4 min-[1080px]:px-5 py-5 min-[1080px]:py-5 bg-[#000000] h-full w-[150px] min-[1080px]:w-[380px]">
+        <p className="font-reddit font-normal text-[12px] min-[1080px]:text-[14px] text-[#9E9E9E] leading-[1.10] tracking-[-0.02em]">
+          Copyright ⓒ 2025 Opensaunas All rights reserved
+        </p>
+      </div>
+    </footer>
+  );
+};
+export default Footer;
