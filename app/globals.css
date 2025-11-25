@@ -22,8 +22,9 @@ body {
   color: var(--foreground);
   overscroll-behavior-y: none;
   scroll-behavior: smooth;
+  max-width: 100%;
+  overflow-x: hidden;
 }
-
 @keyframes shake {
   0%,
   100% {

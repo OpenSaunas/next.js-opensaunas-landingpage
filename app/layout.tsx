@@ -19,8 +19,15 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
     <html
       lang="ko"
       className={`${redditSans.variable} ${ibmPlexSansKR.variable} ${koPubBatang.variable} ${koPubBatangPro.variable}`}
+      style={{
+        WebkitTouchCallout: 'none',
+        WebkitTextSizeAdjust: '100%',
+      }}
     >
-      <body className="font-ibm bg-background text-foreground">
+      <body
+        className="font-ibm bg-background text-foreground"
+        style={{ WebkitTouchCallout: 'none', WebkitTextSizeAdjust: '100%' }}
+      >
         <Header />
         <main>{children}</main>
         <Footer />

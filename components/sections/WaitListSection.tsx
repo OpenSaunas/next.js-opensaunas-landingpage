@@ -59,18 +59,27 @@ const WaitListSection = () => {
         >
           <h2
             className=" 
-                            font-kopub-batang-pro font-medium text-[22px] min-[1080px]:text-[28px] leading-[1.61] tracking-[-0.02em] text-black text-center wrap-break-word"
+                            hidden min-[1080px]:block font-kopub-batang-pro font-medium text-[22px] min-[1080px]:text-[28px] leading-[1.61] tracking-[-0.02em] text-black text-center wrap-break-word"
           >
             오픈사우나스와 함께하고 싶다면? <br />
             메일을 남겨주세요. 가장 먼저 소식을 전해드릴게요.
           </h2>
+          <h2
+            className=" 
+                            block min-[1080px]:hidden font-kopub-batang-pro font-medium text-[22px] min-[1080px]:text-[28px] leading-[1.61] tracking-[-0.02em] text-black text-center wrap-break-word"
+          >
+            오픈사우나스와 함께하고 싶다면? <br />
+            메일을 남겨주세요. 가장 먼저
+            <br />
+            소식을 전해드릴게요.
+          </h2>
           {/* Email Area */}
           <form
             onSubmit={handleSubmit}
-            className="flex flex-col w-full justify-center items-center gap-[26px] min-[1080px]:gap-4 px-[60px] min-[1080px]:px-0 py-2 min-[1080px]:py-0"
+            className="flex flex-col w-full justify-center items-center gap-[26px] min-[1080px]:gap-2.5 px-[60px] min-[1080px]:px-0 py-2 min-[1080px]:py-0"
           >
-            <div className="flex flex-row w-full justify-center items-center gap-[30px] px-[30px] py-2">
-              <div className="relative flex-1 max-w-[400px]">
+            <div className="flex flex-row w-full justify-center items-center gap-[26px]">
+              <div className="relative w-full max-w-[400px]">
                 <label
                   htmlFor="email"
                   className={`absolute left-0 transition-all duration-300 pointer-events-none ${
@@ -94,11 +103,14 @@ const WaitListSection = () => {
                   className="w-full bg-transparent border-b border-black text-[14px] min-[1080px]:text-[22px] font-reddit font-normal outline-none text-black  transition-all duration-300
                 ${showEmailError ? 'border-red-500' : 'border-black focus:border-black/80'}"
                 />
-                {showEmailError && (
-                  <p className="absolute -bottom-6 left-0 text-red-500 text-xs font-ibm">
-                    올바른 이메일 주소를 입력해주세요.
-                  </p>
-                )}
+                <p
+                  className={clsx(
+                    'text-red-500 text-xs font-ibm transition-all duration-300 overflow-hidden',
+                    showEmailError ? 'max-h-6 opacity-100 mt-1' : 'max-h-0 opacity-0 mt-0'
+                  )}
+                >
+                  올바른 이메일 주소를 입력해주세요.
+                </p>
               </div>
               <div className="hidden min-[1080px]:block">
                 <Button type="submit">Join WaitList</Button>
@@ -139,20 +151,18 @@ const WaitListSection = () => {
                 >
                   개인정보 수집 및 이용에 동의합니다.
                 </span>
-
-                {/* 에러 메시지 (오른쪽에서 슬라이드 인) */}
-                <p
-                  className={clsx(
-                    'absolute left-full ml-2  text-red-500 text-xs font-ibm transition-all duration-300 whitespace-nowrap',
-                    showCheckboxError ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none'
-                  )}
-                >
-                  약관에 동의해주세요.
-                </p>
               </label>
               {/* Privacy Notice */}
               <p className="font-ibm text-[12px] max-w-[220px] min-[1080px]:max-w-none text-[#9C9C9C] leading-[1.61] tracking-[-0.02em] wrap-break-word text-center">
                 개인정보는 이벤트 안내 외 다른 용도로 사용되지 않으며, 3개월 후 즉시 삭제됩니다.
+              </p>
+              <p
+                className={clsx(
+                  'text-red-500 text-xs font-ibm transition-all duration-300 overflow-hidden',
+                  showCheckboxError ? 'max-h-6 opacity-100 mt-1' : 'max-h-0 opacity-0 mt-0'
+                )}
+              >
+                약관에 동의해주세요.
               </p>
             </div>
             <div className="block min-[1080px]:hidden">
@@ -176,7 +186,7 @@ const WaitListSection = () => {
           onClick={closeModal}
         >
           <div
-            className="bg-[#F3EFEA] rounded-[20px] px-8 py-10 min-[1080px]:px-12 min-[1080px]:py-14 max-w-[90%] min-[1080px]:max-w-[500px] shadow-2xl animate-scale-in"
+            className="bg-[#F3EFEA] rounded-3xl px-8 py-10 min-[1080px]:px-12 min-[1080px]:py-14 max-w-[90%] min-[1080px]:max-w-[600px] shadow-2xl animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Success Icon */}

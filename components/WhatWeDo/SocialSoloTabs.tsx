@@ -9,8 +9,12 @@ const SocialSoloTabs = () => {
   const [activeTab, setActiveTab] = useState<TabType>('social');
 
   return (
-    <div className="flex justify-center px-4 pt-[30px] pb-[60px] bg-[#F3EFEA]">
-      <div className="flex flex-1 max-w-[840px] py-[30px] rounded-[30px] bg-[#E6DFD6]">
+    <div className="flex justify-center px-4 pt-[30px] pb-[60px] bg-[#F3EFEA] overflow-x-hidden">
+      <div
+        className={`flex w-full max-w-[840px] py-[30px] rounded-[30px] transition-colors duration-300 ${
+          activeTab === 'social' ? 'bg-[#E6DFD6]' : 'bg-[#D9DDE0]'
+        }`}
+      >
         <div className="flex flex-col items-center w-full gap-[19px]">
           {/* Tabs */}
           <div className="flex flex-col items-center w-full gap-4 px-[46px]">
@@ -54,10 +58,17 @@ const SocialSoloTabs = () => {
                 )}
               </button>
             </div>
-            <div className="w-[246px] text-center">
-              <p className="font-ibm text-[14px] font-medium leading-[1.65] tracking-[-0.02em] text-black wrap-break-word">
-                심리, 창작, 로컬 문화의 이야기를 전해줄 인물과 함께하는 사우나
-              </p>
+            <div className="w-[246px] text-center h-10">
+              {activeTab === 'social' && (
+                <p className="font-ibm text-[14px] font-medium leading-[1.65] tracking-[-0.02em] text-black wrap-break-word">
+                  심리, 창작, 로컬 문화의 이야기를 전해줄 <br /> 인물과 함께하는 사우나
+                </p>
+              )}
+              {activeTab === 'solo' && (
+                <p className="font-ibm text-[14px] font-medium leading-[1.65] tracking-[-0.02em] text-black wrap-break-word">
+                  혼자 쉬고 싶을 때, 감정 정리가 필요할 때
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col items-center w-full px-[30px] gap-8 ">
@@ -66,7 +77,7 @@ const SocialSoloTabs = () => {
                 {[
                   ['Opening Talk', '삶과 일, 그리고 ‘쉬는 법’에 대해 새로운 시선으로 듣는 이야기'],
                   ['Sauna Dialogue', '연사와 참가자가 함께 진솔하게 대화하는 시간'],
-                  ['Cool Down & Tea', '생각돋 열기도 마무리하는 시간'],
+                  ['Cool Down & Tea', '생각도 열기도 마무리하는 시간'],
                 ].map(([title, desc], i) => (
                   <div key={i} className="flex flex-col gap-2.5 h-[138px]">
                     <p className="text-[12px] font-reddit font-normal leading-[1.34] tracking-[-0.02em] text-black wrap-break-word">

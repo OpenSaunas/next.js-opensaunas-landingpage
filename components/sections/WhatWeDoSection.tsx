@@ -28,10 +28,12 @@ const WhatWeDoSection = () => {
         "
       >
         {/* Intro Text */}
-        <p className="font-kopub-batang text-[22px] min-[1080px]:text-[26px] font-light leading-[1.61] tracking-[-0.01em] text-black wrap-break-word">
-          오픈사우나스는 현재 세부 프로그램과 일정, <br /> 그리고 특별한 콘텐츠를 준비하고 있습니다. <br /> 다가오는
-          연말, 새로운 만남과 어울림을 기대해주세요.
-        </p>
+        <div className="min-[1080px]:max-w-[580px] max-w-60">
+          <p className="font-kopub-batang text-[22px] min-[1080px]:text-[26px] font-medium leading-[1.61] tracking-[-0.01em] text-black wrap-break-word">
+            오픈사우나스는 현재 세부 프로그램과 일정, 그리고 특별한 콘텐츠를 준비하고 있습니다. 다가오는 연말, 새로운
+            만남과 어울림을 기대해주세요.
+          </p>
+        </div>
 
         <div className="hidden min-[1080px]:block">
           {' '}
