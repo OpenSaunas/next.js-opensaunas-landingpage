@@ -5,13 +5,13 @@ const Footer = () => {
     <footer className="flex flex-row items-center justify-start w-full h-[90px] min-[1080px]:h-[120px]">
       {/* Left Section */}
       <div className="flex px-4 min-[1080px]:px-[39px] py-2.5 min-[1080px]:py-5 w-full h-full bg-[#D8D8D8]">
-        <div className="flex flex-col gap-0 justify-start items-start">
+        <div className="flex flex-col gap-0 justify-end items-start">
           {/* Instagram Link */}
           <a
             href="https://www.instagram.com/opensaunas/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-[1.61] tracking-[-0.03em] text-black min-[1080px]:-mb-3 w-fit"
+            className="font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-none tracking-[-0.03em] text-black w-fit"
           >
             <span className="inline-block border-b-2 border-black leading-none">Insta</span>
             <span className="inline-block leading-none">g</span>
@@ -20,13 +20,13 @@ const Footer = () => {
           <div
             className="
             flex flex-row
-            gap-[17px]
-            font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-[1.61] tracking-[-0.03em] text-black"
+            gap-[17px] h-auto
+            font-reddit font-medium text-[16px] min-[1080px]:text-[30px] leading-none tracking-[-0.03em] text-black"
           >
             <p>Contact</p>
             <p className="hidden min-[1080px]:block">opensaunas@gmail.com</p>
           </div>
-          <p className="font-reddit font-medium text-[16px] leading-[1.61] tracking-[-0.03em] text-black block min-[1080px]:hidden">
+          <p className="font-reddit font-medium text-[16px] leading-none tracking-[-0.03em] text-black block min-[1080px]:hidden">
             opensaunas@gmail.com
           </p>
         </div>

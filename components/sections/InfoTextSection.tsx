@@ -31,8 +31,13 @@ const InfoTextSection = () => {
           &apos;&apos;굳이 적극적으로 말을 거는 것도 아니고, 말을 걸고 싶은 것도 아닙니다. 다만 같은 곳을 다니는 아는
           사람들 속에 있을 수 있다는 것이 마음의 안도감을 불러일으키고 있는 것 같습니다.&apos;&apos;
         </p>
-        <p className="w-full max-w-[290px] text-[12px] font-light leading-1.61 tracking-[-0.02em] wrap-break-word self-end">
+        <p className="hidden min-[1080px]:block w-full max-w-[290px] text-[12px] font-light leading-1.61 tracking-[-0.02em] wrap-break-word self-end">
           - 고스기유 목욕탕 대표 히라마쓰 유스케
+        </p>
+        <p className="block min-[1080px]:hidden w-full max-w-[290px] text-[12px] font-light leading-1.61 tracking-[-0.02em] wrap-break-word self-end">
+          -<br />
+          고스기유 목욕탕 대표 <br />
+          히라마쓰 유스케
         </p>
       </div>
     </section>
