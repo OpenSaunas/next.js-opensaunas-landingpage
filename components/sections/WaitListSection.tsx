@@ -1,8 +1,10 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Button from '../common/Button';
 import Image from 'next/image';
 import clsx from 'clsx';
+import { supabase } from '@/lib/supabase';
+import { getAnalytics } from '@/lib/analytics';
 
 const WaitListSection = () => {
   const [email, setEmail] = useState('');
@@ -11,31 +13,117 @@ const WaitListSection = () => {
   const [showEmailError, setShowEmailError] = useState(false);
   const [showCheckboxError, setShowCheckboxError] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [hasTrackedInput, setHasTrackedInput] = useState(false);
 
-  const isEmailValid = email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const canSubmit = isEmailValid && isChecked;
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const analytics = useRef(getAnalytics());
+
+  // 컴포넌트 마운트 시 페이지 뷰 추적
+  useEffect(() => {
+    analytics.current.trackPageView();
+  }, []);
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+
+    // 첫 입력 시 한 번만 추적
+    if (!hasTrackedInput && newEmail.length > 0) {
+      analytics.current.trackInputStart();
+      setHasTrackedInput(true);
+    }
+
+    if (showEmailError) setShowEmailError(false);
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsChecked(checked);
+
+    // 체크박스 클릭 추적
+    analytics.current.trackCheckboxClick(checked);
+
+    if (showCheckboxError) setShowCheckboxError(false);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // 가설 1: CTA 클릭 추적 (Submit 버튼 클릭)
+    await analytics.current.trackCtaClick();
+
+    // --- 1. Validation ---
+    let hasError = false;
+
+    // 가설 3: 유효 연락처 비율 추적
+    await analytics.current.trackValidContact(email, isEmailValid);
 
     if (!isEmailValid) {
       setShowEmailError(true);
-      if (!isChecked) {
-        setShowCheckboxError(true);
-      }
-      return;
+      hasError = true;
     }
+
     if (!isChecked) {
       setShowCheckboxError(true);
+      hasError = true;
+    }
+
+    if (hasError) {
+      // 검증 실패 시에도 추적
+      await analytics.current.trackFormSubmit(email, isEmailValid, false);
       return;
     }
-    // 성공 처리
-    console.log('Submitted email:', email);
-    setShowSuccessModal(true);
-    setEmail('');
-    setIsChecked(false);
-    setShowEmailError(false);
-    setShowCheckboxError(false);
+
+    // --- 2. Supabase 저장 ---
+    try {
+      const trafficSource =
+        sessionStorage.getItem('traffic_source') ||
+        new URLSearchParams(window.location.search).get('utm_source') ||
+        (document.referrer ? new URL(document.referrer).hostname : 'direct');
+
+      const { data, error } = await supabase.from('waitlist').insert({
+        email,
+        is_agreed: isChecked,
+        created_at: new Date().toISOString(),
+        clicked_cta: true,
+        submitted_at: new Date().toISOString(),
+        traffic_source: trafficSource,
+        referrer: document.referrer,
+        user_agent: navigator.userAgent,
+        session_id: sessionStorage.getItem('session_id'),
+      });
+
+      if (error) {
+        console.error('Supabase Insert Error:', error);
+
+        // 가설 2: 폼 제출 실패 추적
+        await analytics.current.trackFormSubmit(email, isEmailValid, false);
+
+        alert('서버 저장 중 문제가 발생했어요. 잠시 후 다시 시도해주세요.');
+        return;
+      }
+
+      console.log(data);
+
+      // 가설 2: 폼 제출 성공 추적
+      await analytics.current.trackFormSubmit(email, isEmailValid, true);
+
+      // --- 3. 성공 처리 ---
+      setShowSuccessModal(true);
+      setEmail('');
+      setIsChecked(false);
+      setShowEmailError(false);
+      setShowCheckboxError(false);
+      setHasTrackedInput(false);
+    } catch (err) {
+      console.error('Unexpected Submit Error:', err);
+
+      // 예외 발생 시에도 추적
+      await analytics.current.trackFormSubmit(email, isEmailValid, false);
+
+      alert('알 수 없는 오류가 발생했습니다.');
+    }
   };
 
   const closeModal = () => {
@@ -94,10 +182,7 @@ const WaitListSection = () => {
                   id="email"
                   type="email"
                   value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (showEmailError) setShowEmailError(false);
-                  }}
+                  onChange={handleEmailChange}
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                   className="w-full bg-transparent border-b border-black text-[14px] min-[1080px]:text-[22px] font-reddit font-normal outline-none text-black  transition-all duration-300
@@ -125,10 +210,7 @@ const WaitListSection = () => {
                   <input
                     type="checkbox"
                     checked={isChecked}
-                    onChange={(e) => {
-                      setIsChecked(e.target.checked);
-                      if (showCheckboxError) setShowCheckboxError(false);
-                    }}
+                    onChange={handleCheckboxChange}
                     className="appearance-none w-3.5 h-3.5 min-[1080px]:w-[18px] min-[1080px]:h-[18px] border cursor-pointer 
                  checked:bg-black transition-[border-color] duration-200 border-black group-hover:border-black/70"
                   />
@@ -169,56 +251,83 @@ const WaitListSection = () => {
               <Button type="submit">Join WaitList</Button>
             </div>
           </form>
-          <Image
-            src="/img_logo.png"
-            alt="OpenSaunas Logo"
-            width={280}
-            height={208}
-            className="min-[1080px]:w-[440px] min-[1080px]:h-[336px]"
-          />
+          <Image src="/img_logo.png" alt="OpenSaunas Logo" width={280} height={208} className="w-auto h-auto" />
         </div>
       </section>
 
       {/* Success Modal */}
       {showSuccessModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-white/20 backdrop-blur-sm animate-fade-in"
           onClick={closeModal}
         >
           <div
-            className="bg-[#F3EFEA] rounded-3xl px-8 py-10 min-[1080px]:px-12 min-[1080px]:py-14 max-w-[90%] min-[1080px]:max-w-[600px] shadow-2xl animate-scale-in"
+            className="flex flex-col gap-2.5 bg-[#FEFEFA] rounded-3xl px-3 py-3 max-w-[75%] min-[1080px]:max-w-[600px] shadow-[0_4px_12px_rgba(0,0,0,0.1)] animate-scale-in"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Success Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 min-[1080px]:w-20 min-[1080px]:h-20 bg-black rounded-full flex items-center justify-center">
-                <svg
-                  className="w-10 h-10 min-[1080px]:w-12 min-[1080px]:h-12 text-[#F3EFEA]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            <div className="relative pt-[38px]">
+              <div className="flex flex-col gap-2.5">
+                {/* X Button */}
+                <button
+                  aria-label="Close modal"
+                  onClick={closeModal}
+                  className="
+                    absolute top-1.5 right-1.5
+                    flex items-center justify-center
+                    w-5 h-5
+                    border-none
+                  text-[#343330]
+                  hover:bg-black/5 hover:text-black
+                    transition
+                  "
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                </svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                {/* Text */}
+                <div className="flex flex-col gap-2 px-3 min-[1080px]:px-[52px]">
+                  <h3 className="font-ibm font-medium text-[20px] min-[1080px]:text-[24px] leading-[1.65] tracking-[-0.02em] text-black text-center">
+                    신청이 완료되었습니다.
+                  </h3>
+                  <p className="font-ibm text-[12px] min-[1080px]:text-[16px] leading-[1.65] tracking-[-0.02em] text-[#4D4D4D] text-center">
+                    사전 설문에 참여하시면 추첨을 통해 스타벅스 <br />
+                    기프티콘을 보내드립니다.
+                  </p>
+                </div>
+                <Image
+                  src="/img_survey.png"
+                  alt="Survey Image"
+                  width={391}
+                  height={1207}
+                  className="w-auto h-auto"
+                  priority
+                />
               </div>
             </div>
 
-            {/* Message */}
-            <h3 className="font-kopub-batang-pro font-medium text-[22px] min-[1080px]:text-[28px] leading-[1.61] tracking-[-0.02em] text-black text-center mb-4">
-              신청이 완료되었습니다!
-            </h3>
-            <p className="font-ibm text-[14px] min-[1080px]:text-[16px] leading-[1.61] tracking-[-0.02em] text-black/70 text-center mb-8">
-              입력하신 이메일로 오픈사우나스의 소식을 <br />
-              가장 먼저 전해드리겠습니다.
-            </p>
-
             {/* Close Button */}
-            <button
+            <a
+              href="https://forms.gle/jduD6QzaZV4gHtFQ6"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={closeModal}
-              className="w-full bg-black text-white font-ibm font-medium text-[16px] min-[1080px]:text-[18px] py-3 min-[1080px]:py-4 rounded-full hover:bg-black/90 transition-all duration-200 hover:scale-[1.02] active:scale-95"
+              className="block text-center w-full
+              bg-black text-white font-ibm font-semibold
+                text-[14px] min-[1080px]:text-[18px]
+                py-2 rounded-[200px]
+              hover:bg-black/90 transition-all duration-200
+                hover:scale-[1.02] active:scale-95"
             >
-              확인
-            </button>
+              1분 설문 시작하기
+            </a>
           </div>
         </div>
       )}
